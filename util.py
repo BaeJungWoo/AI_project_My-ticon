@@ -9,6 +9,7 @@ import numpy as np
 import os
 import torch
 import torch.nn as nn
+import argparse
 
 
 def clean(x): 
@@ -22,19 +23,3 @@ def clean(x):
     x = repeat_normalize(x, num_repeats=2)
 
     return x
-
-data = pd.read_csv("./data.csv",encoding='cp949')
-sentence, label = list(), list()
-max_len = 15
-for idx in range(len(data)):
-    sen, lbl = data.iloc[idx,:]
-    tok = tokenizer(clean(sen))['input_ids']
-    if len(tok) >= max_len:
-        sentence.append(tok[:max_len])
-    else:
-        sentence.append([0]* (max_len - len(tok))+tok)
-    label.append(label_dic[lbl])
-sentence = np.array(sentence)
-label = np.array(label).reshape(-1,1)
-print(sentence.shape)
-print(label.shape)

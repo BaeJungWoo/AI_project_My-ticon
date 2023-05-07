@@ -1,8 +1,8 @@
 from util import *
 
-class RNN(nn.Module):
+class LSTM(nn.Module):
   def __init__(self, device, embed_dim, hidden_dim, num_classes = 7):
-    super(RNN, self).__init__()
+    super(LSTM, self).__init__()
     self.device = device
     self.embed_dim = embed_dim
     self.hidden_dim = hidden_dim
@@ -12,19 +12,26 @@ class RNN(nn.Module):
     self.build_model()
     self.to(device)
 
+
   def build_model(self):
     self.word_embedding = nn.Embedding(self.vocab_size, self.embed_dim)
-    self.rnn = nn.RNN(input_size=self.embed_dim, hidden_size=self.hidden_dim, batch_first = True)
-    self.layer1 = nn.Linear(in_features = self.hidden_dim, out_features = self.num_classes)
+    self.lstm = nn.LSTM(input_size=self.embed_dim, hidden_size=self.hidden_dim, batch_first = True, dropout=0.3)
+    self.layer1 = nn.Linear(in_features = self.hidden_dim, out_features = 16)
+    self.layer2 = nn.Linear(in_features = 16,  out_features = self.num_classes)
+    self.relu = nn.ReLU()
     self.softmax = nn.Softmax(dim = 1)
     self.loss_function = nn.CrossEntropyLoss()
 
   def forward(self, x):
     x = self.word_embedding(x)
     h_0 = torch.zeros(1, x.size(0), self.hidden_dim).to(self.device)
-    x, h_0 = self.rnn(x, h_0)
+    c_0 = torch.zeros(1, x.size(0), self.hidden_dim).to(self.device)
+    x, (h_t,c_t) = self.lstm(x, (h_0,c_0))
     h_t = x[:, -1, :]
     output = self.layer1(h_t)
+    output = self.relu(output)
+    output = self.layer2(output)
+    
     return output.squeeze()
 
   def train_model(self, x_train, y_train, num_epochs, batch_size, learning_rate):
@@ -54,6 +61,7 @@ class RNN(nn.Module):
       iter_per_epoch = max(int(len(X) / batch_size), 1)
       for batch_idx in range(iter_per_epoch):
         out = X[batch_idx*batch_size:(batch_idx+1)*(batch_size),:]
+        
         out = torch.Tensor(out).long().to(self.device)
         out = self.forward(out)
         batch_labels = torch.Tensor(y[batch_idx*batch_size:(batch_idx+1)*(batch_size),:].reshape(-1)).long().to(self.device)
@@ -65,4 +73,3 @@ class RNN(nn.Module):
       accuracy = (preds == labels.reshape(-1)).sum().data.cpu().numpy() / y.shape[0]
       
     return accuracy, total_loss
-

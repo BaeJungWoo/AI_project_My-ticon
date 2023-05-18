@@ -1,7 +1,7 @@
 from util import *
 
 class LSTM(nn.Module):
-  def __init__(self, device, embed_dim, hidden_dim, num_classes = 7):
+  def __init__(self, device, embed_dim, hidden_dim, num_classes = 4):
     super(LSTM, self).__init__()
     self.device = device
     self.embed_dim = embed_dim

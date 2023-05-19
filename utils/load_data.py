@@ -60,4 +60,6 @@ def add_emotion(model, emotion, sentence):
     emo_added = np.array([0, 0, 0, 0])
     emo_added = np.append(emo_added, sentence)
 
+    emo_added[emotion] = distance
+
     return emo_added

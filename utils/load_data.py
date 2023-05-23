@@ -41,25 +41,25 @@ def convert_sentence_emotion(model, emotion, sentence):
     for idx in range(len(sentence)):
 
         emotion_label = emotion[idx]
-        distance = np.sqrt(np.mean(sentence[idx]**2))
+        distance = np.sqrt(np.sum(sentence[idx]**2))
+        sentence /= distance
 
         tmp_vector = np.array([0, 0, 0, 0])
         tmp_vector = np.append(tmp_vector, sentence[idx])
-        tmp_vector[emotion_label] = distance
+        tmp_vector[emotion_label] = 1
         sentence_vector.append(tmp_vector)
 
     return sentence_vector
 
 
-def add_emotion(model, emotion, sentence):
+def add_emotion(model, weight, emotion, sentence):
 
     sentence = model.encode(sentence)
 
-    distance = np.sqrt(np.mean(sentence**2))
+    distance = np.sqrt(np.sum(sentence**2))
+    sentence /= distance
 
-    emo_added = np.array([0, 0, 0, 0])
-    emo_added = np.append(emo_added, sentence)
-
-    emo_added[emotion] = distance
+    emo_distance = np.sqrt(np.sum(emotion**2))
+    emo_added = np.append(weight*emotion/emo_distance, sentence)
 
     return emo_added

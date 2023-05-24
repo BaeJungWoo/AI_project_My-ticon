@@ -42,7 +42,7 @@ def convert_sentence_emotion(model, emotion, sentence):
 
         emotion_label = emotion[idx]
         distance = np.sqrt(np.sum(sentence[idx]**2))
-        sentence /= distance
+        sentence[idx] /= distance
 
         tmp_vector = np.array([0, 0, 0, 0])
         tmp_vector = np.append(tmp_vector, sentence[idx])

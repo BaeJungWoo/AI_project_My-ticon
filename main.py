@@ -23,6 +23,7 @@ from sentence_transformers import SentenceTransformer, util
 from sklearn.datasets import make_classification
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.neighbors import KNeighborsClassifier
+from Recommend import *
 
 
 def recommend(knn, input_sentence, num_recommend,weight_emotion = 1):
@@ -61,26 +62,25 @@ if __name__=="__main__":
     emoticon2idx = emoticon2idx(emoticon2idx_path)
     emotion_model = Model.load_from_checkpoint(emotion_model_path)
     sentence_model = SentenceTransformer(sentence_model_path)
-    
+
     train_sentences, train_emotions, train_labels = load_dataset(emoticon_sentence_path)
-    train_sentences = convert_sentence_emotion(sentence_model, train_emotions, train_sentences)
-    knn = KNeighborsClassifier(n_neighbors=10, algorithm='brute', metric='cosine')
-    knn.fit(train_sentences, train_labels)
+    train = (train_sentences, train_emotions, train_labels)
+    model = Recommend(sentence_model, emotion_model ,train, idx2emoticon)
+    model.recommend(input_sentence=['귀여운 강아지'], emotion_weight=1, threshold=3, recommend_num=10)
+    
+    # train_sentences, train_emotions, train_labels = load_dataset(emoticon_sentence_path)
+    # train_sentences = convert_sentence_emotion(sentence_model, train_emotions, train_sentences)
+    # knn = KNeighborsClassifier(n_neighbors=10, algorithm='brute', metric='cosine')
+    # knn.fit(train_sentences, train_labels)
 
     #label_dic = {"슬픔":0, "당황":1, "기쁨": 2, "분노":3}
     # input_sentence = ['오늘 기분 진짜 개짜증나네!']
-    input_sentence = None
-    while True:
-        print("Enter Input Sentence : ",end="")
-        input_sentence = sys.stdin.readline()
-        print(input_sentence)
-        if input_sentence == "-1\n":
-            print("Bye!")
-            break
-        recommend(knn = knn, input_sentence=[str(input_sentence)], num_recommend = 7, weight_emotion=768/4)
-    
-
-    #####
-    # sum mean
-    # weight
-    #
+    # input_sentence = None
+    # while True:
+    #     print("Enter Input Sentence : ",end="")
+    #     input_sentence = sys.stdin.readline()
+    #     print(input_sentence)
+    #     if input_sentence == "-1\n":
+    #         print("Bye!")
+    #         break
+    #     recommend(knn = knn, input_sentence=[str(input_sentence)], num_recommend = 7, weight_emotion=768/4)

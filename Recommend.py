@@ -59,3 +59,18 @@ class Recommend:
         
         for i in range(recommend_num):
             print('Rank{} recommended emoticon: {}'.format(i+1, self.idx2emoticon[recommendation[i]]))
+            
+    def sentence_analysis(self, input_sentence, emotion_weight = 1, top_num = 5): #input sentences => [List,...]
+        sentence_emotion = self.infer(input_sentence).cpu().detach().numpy() #emotion analysis
+        input_vector = self.add_emotion(sentence_emotion, input_sentence, emotion_weight).reshape(-1,1)
+        cos_sim = np.dot(self.train_vector, input_vector).squeeze()
+        rank_index = np.argsort(cos_sim)[::-1]
+        candidate = []
+        for i in range(top_num):
+            tmp = self.sen_model.encode(self.train_sen[rank_index[i]])
+            mean = np.mean(tmp)
+            std = np.std(tmp)
+            candidate.append((tmp - mean) / std)
+        analysis = np.mean(np.array(candidate),axis = 0).reshape(-1,1)
+        input = self.sen_model.encode(input_sentence).reshape(1,-1)
+        return np.dot(input,analysis).item()

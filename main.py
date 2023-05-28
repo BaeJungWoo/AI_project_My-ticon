@@ -62,11 +62,22 @@ if __name__=="__main__":
     emoticon2idx = emoticon2idx(emoticon2idx_path)
     emotion_model = Model.load_from_checkpoint(emotion_model_path)
     sentence_model = SentenceTransformer(sentence_model_path)
-
+    
     train_sentences, train_emotions, train_labels = load_dataset(emoticon_sentence_path)
     train = (train_sentences, train_emotions, train_labels)
     model = Recommend(sentence_model, emotion_model ,train, idx2emoticon)
     model.recommend(input_sentence=['귀여운 강아지'], emotion_weight=1, threshold=3, recommend_num=10)
+
+    #for Analysis bw Emotion weight and Sentence embedding Similarity
+    import matplotlib.pyplot as plt
+    from tqdm import tqdm
+    value = []
+    x = np.arange(1,101)
+    for i in tqdm(range(1,101)):
+        value.append(model.sentence_analysis(['귀여운 강아지'],i,5))
+    plt.plot(x,np.array(value),marker = 'o')
+    plt.show()
+
     
     # train_sentences, train_emotions, train_labels = load_dataset(emoticon_sentence_path)
     # train_sentences = convert_sentence_emotion(sentence_model, train_emotions, train_sentences)

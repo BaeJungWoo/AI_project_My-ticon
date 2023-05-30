@@ -62,7 +62,7 @@ if __name__=="__main__":
     emoticon2idx = emoticon2idx(emoticon2idx_path)
     emotion_model = Model.load_from_checkpoint(emotion_model_path)
     sentence_model = SentenceTransformer(sentence_model_path)
-    
+
     train_sentences, train_emotions, train_labels = load_dataset(emoticon_sentence_path)
     train = (train_sentences, train_emotions, train_labels)
     model = Recommend(sentence_model, emotion_model ,train, idx2emoticon)

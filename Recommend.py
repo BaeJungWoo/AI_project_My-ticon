@@ -71,9 +71,11 @@ class Recommend:
         candidate = []
         for i in range(top_num):
             tmp = self.sen_model.encode(self.train_sen[self.rank_index[i]])
-            mean = np.mean(tmp)
-            std = np.std(tmp)
-            candidate.append((tmp - mean) / std)
+            # mean = np.mean(tmp)
+            # std = np.std(tmp)
+            # candidate.append((tmp - mean) / std)
+            tmp = np.sqrt(np.sum(tmp**2))
+            candidate.append(tmp)
         analysis = np.mean(np.array(candidate),axis = 0).reshape(-1,1)
         input_vec = self.sen_model.encode(input_sentence).reshape(1,-1)
 

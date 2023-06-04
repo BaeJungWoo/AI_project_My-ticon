@@ -1,5 +1,0 @@
-emoji==0.6.0
-transformers
-soynlp
-pytorch_lightning
-sentence_transformers

@@ -55,9 +55,9 @@ def recommend(knn, input_sentence, num_recommend,weight_emotion = 1):
 if __name__=="__main__":
     emotion_model_path = '/content/drive/MyDrive/epoch9-val_acc0.7202.ckpt'
     sentence_model_path = 'snunlp/KR-SBERT-V40K-klueNLI-augSTS'
-    emoticon_sentence_path = '/content/dataset/sentence_emoticon.txt'
-    idx2emoticon_path = '/content/dataset/idx2emoticon.txt'
-    emoticon2idx_path = '/content/dataset/emoticon2idx.txt'
+    emoticon_sentence_path = '/content/AI_project_My-ticon/dataset/sentence_emoticon.txt'
+    idx2emoticon_path = '/content/AI_project_My-ticon/dataset/idx2emoticon.txt'
+    emoticon2idx_path = '/content/AI_project_My-ticon/dataset/emoticon2idx.txt'
     idx2emoticon = idx2emoticon(idx2emoticon_path)
     emoticon2idx = emoticon2idx(emoticon2idx_path)
     emotion_model = Model.load_from_checkpoint(emotion_model_path)
@@ -66,32 +66,14 @@ if __name__=="__main__":
     train_sentences, train_emotions, train_labels = load_dataset(emoticon_sentence_path)
     train = (train_sentences, train_emotions, train_labels)
     model = Recommend(sentence_model, emotion_model ,train, idx2emoticon)
-    model.recommend(input_sentence=['귀여운 강아지'], emotion_weight=1, threshold=3, recommend_num=10)
+    model.recommend(input_sentence=['귀여운 강아지'], emotion_weight=0.4, threshold=2, recommend_num=10)
 
     #for Analysis bw Emotion weight and Sentence embedding Similarity
-    import matplotlib.pyplot as plt
-    from tqdm import tqdm
-    value = []
-    x = np.arange(1,101)
-    for i in tqdm(range(1,101)):
-        value.append(model.sentence_analysis(['귀여운 강아지'],i,5))
-    plt.plot(x,np.array(value),marker = 'o')
-    plt.show()
-
-    
-    # train_sentences, train_emotions, train_labels = load_dataset(emoticon_sentence_path)
-    # train_sentences = convert_sentence_emotion(sentence_model, train_emotions, train_sentences)
-    # knn = KNeighborsClassifier(n_neighbors=10, algorithm='brute', metric='cosine')
-    # knn.fit(train_sentences, train_labels)
-
-    #label_dic = {"슬픔":0, "당황":1, "기쁨": 2, "분노":3}
-    # input_sentence = ['오늘 기분 진짜 개짜증나네!']
-    # input_sentence = None
-    # while True:
-    #     print("Enter Input Sentence : ",end="")
-    #     input_sentence = sys.stdin.readline()
-    #     print(input_sentence)
-    #     if input_sentence == "-1\n":
-    #         print("Bye!")
-    #         break
-    #     recommend(knn = knn, input_sentence=[str(input_sentence)], num_recommend = 7, weight_emotion=768/4)
+    # import matplotlib.pyplot as plt
+    # from tqdm import tqdm
+    # value = []
+    # x = np.arange(1,101)
+    # for i in tqdm(range(1,101)):
+    #     value.append(model.sentence_analysis(['귀여운 강아지'],i,5))
+    # plt.plot(x,np.array(value),marker = 'o')
+    # plt.show()
